@@ -49,7 +49,7 @@ while :; do
                 eval "update$id() { block$id="\$\(setsid -f "$cmd"\)" ;}"
                 [ $interv -eq 0 ]  && "update$id"
 
-                bar="${bar:+$bar$delim}$ico\$block$id"
+                bar="${bar:+$bar$delim}$ico\${block$id}"
                 trap "update$id && display" "RTMIN+$sig"
             fi
 
