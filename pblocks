@@ -2,21 +2,30 @@
 
 # pblocks - modular status bar for dwm (and other wm's)
 
+display() { eval "xsetroot -name \"$bar\"" ;}
+
 for file in "${XDG_CONFIG_HOME:-$HOME/.config}/pblocks/config" "${0%/*}/config"; do
     [ -f "$file" ] && config="$file" && break
 done
-[ -z "$config" ] && echo "Config not found." >&2 && exit 1
+delim=" "
 
-display() { eval "xsetroot -name \"$bar\"" ;}
+while getopts "vhc:d:" o; do case "$o" in
+    v) echo "VERSION" && exit 0 ;;
+    h) echo "This program is suckless. Source code is the documentation." && exit 0 ;;
+    c) [ ! -f "$OPTARG" ] && echo "$OPTARG: no such file" && exit 1
+        config="$OPTARG" ;;
+    d) delim="$OPTARG" ;;
+    *) echo "Invalid option: -$OPTARG" && exit 1 ;;
+esac done
+
+[ -z "$config" ] && echo "Config not found." && exit 1
 
 temp="$(mktemp /tmp/XXX.pblocks)"
-trap 'rm -f $temp' HUP INT QUIT TERM PWR EXIT
+trap 'rm -f $temp ; return' HUP INT QUIT TERM PWR EXIT
 grep -v -e'^#' -e'^[\s\t]*$' "$config" > "$temp"
 
 bar=""
-delim=" "
 sec=0
-
 while :; do
     [ $sec -ne 0 ] && sleep 1 &
     wait && {
