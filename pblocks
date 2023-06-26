@@ -1,59 +1,43 @@
 #!/bin/sh
 
-volume() { echo "🔊$(wpctl get-volume @DEFAULT_AUDIO_SINK@)" ;}
-not() { echo "--- [ # test NOT 36\" ]" ;}
-dt() { date "+ %d %b (%a) 🕘%I:%M:%S" ;}
-memory() { free -h | awk '/^Mem:/ {print $3 "/" $2}' ;}
-ss() { echo "$sec]" ;}
-
-display() { eval "xsetroot -name \"$bar\"" ;}
-
-config="$(cat << 'EOF'
-#icon   interv  signal command
-""	 0	18      echo "["
-"🧲"	 0	8      sbvpn
-# "🫠",   not,    3,      1
-# "",     dt,     0,      7
-# "",     volume, 0,      10
-# "",     memory, 15,     9
-#""      0       8   "sb-pacpackages"
-#""	 0	6       "sb-news"
-#""	 20	7       "sb-torrent"
-#""	 0	13      "sb-doppler"
-""	 18000	5   "sb-forecast"
-""	 1	16      "sb-nettraf"
-""	 0	10      "sb-volume"
-""	 5	3       "sb-battery"
-""	 60	1       "sb-clock"
-""	 5	4       "sb-internet"
-""	 0	15      "sb-help-icon"
-#""	 0	18      echo "thirtysix on TOP!"
-""	 0	18      echo "]"
+# pblocks - modular status bar for dwm (and other wm's)
+config="$(cat <<-EOF
+# Icon  Interval  Signal  Command
+""      60      7       up-time
+""      0       8       packages
+""      10      14      memory
+""      0       10      volume
+""      0       4       vpn
+""      60      1       datetime
 EOF
 )"
 
-temp=$(mktemp)
-echo "$config" | grep -v "^#" >$temp
+display() { eval "xsetroot -name \"$bar\"" ;}
+
+temp="$(mktemp /tmp/XXX.pblocks)"
+trap 'rm -f $temp' HUP INT QUIT TERM PWR EXIT
+echo "$config" | grep -v -e'^#' -e'^[\s\t]*$' > "$temp"
 
 bar=""
-delim="] ["
+delim=" "
 sec=0
 
 while :; do
-    [ $sec -ne 0 ] && sleep 1  &
+    [ $sec -ne 0 ] && sleep 1 &
     wait && {
         id=0
         while read -r ico interv sig cmd; do
             if [ $sec -eq 0 ]; then
-                # eval 'update'$id'() { block'$id'="$(setsid -f '"$cmd"')" ;}'
-                eval "update$id() { block$id="\$\(setsid -f "$cmd"\)" ;}"
-                [ $interv -eq 0 ]  && "update$id"
+                eval "update$id() { block$id=\$(setsid -f $cmd) ;}"
+                [ "$interv" -eq 0 ]  && "update$id" && display
 
                 bar="${bar:+$bar$delim}$ico\${block$id}"
+
+                # shellcheck disable=SC2064
                 trap "update$id && display" "RTMIN+$sig"
             fi
-
-            [ "$interv" -ne 0 ] && [ $((sec % interv)) -eq 0 ] && eval "update$id && display"
+            # update block if seconds divide by interval
+            [ "$interv" -ne 0 ] && [ $((sec % interv)) -eq 0 ] && "update$id" && display
             id=$((id + 1))
         done < "$temp"
         sec=$((sec + 1))

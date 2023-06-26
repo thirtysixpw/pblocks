@@ -31,8 +31,7 @@ but is faster. Just add 34 to your typical signal number.
 My volume module *never* updates on its own, instead I have this command run
 along side my volume shortcuts in dwm to only update it when relevant.
 
-Note that all modules must have different signal numbers. If you don't want
-block to update on signal put `-1` in signal field.
+Note that all modules must have different signal numbers.
 
 ## Improvements
 
