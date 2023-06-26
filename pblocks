@@ -1,22 +1,13 @@
 #!/bin/sh
 
 # pblocks - modular status bar for dwm (and other wm's)
-config="$(cat <<-EOF
-# Icon  Interval  Signal  Command
-""      60      7       up-time
-""      0       8       packages
-""      10      14      memory
-""      0       10      volume
-""      0       4       vpn
-""      60      1       datetime
-EOF
-)"
+config="${0%/*}/config"
 
 display() { eval "xsetroot -name \"$bar\"" ;}
 
 temp="$(mktemp /tmp/XXX.pblocks)"
 trap 'rm -f $temp' HUP INT QUIT TERM PWR EXIT
-echo "$config" | grep -v -e'^#' -e'^[\s\t]*$' > "$temp"
+grep -v -e'^#' -e'^[\s\t]*$' "$config" > "$temp"
 
 bar=""
 delim=" "
