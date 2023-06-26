@@ -1,7 +1,11 @@
 #!/bin/sh
 
 # pblocks - modular status bar for dwm (and other wm's)
-config="${0%/*}/config"
+
+for file in "${XDG_CONFIG_HOME:-$HOME/.config}/pblocks/config" "${0%/*}/config"; do
+    [ -f "$file" ] && config="$file" && break
+done
+[ -z "$config" ] && echo "Config not found." >&2 && exit 1
 
 display() { eval "xsetroot -name \"$bar\"" ;}
 
