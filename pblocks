@@ -2,6 +2,23 @@
 
 # pblocks - modular status bar for dwm and other wm's
 
+usage() {
+    cat <<EOF
+pblocks: modular status bar for dwm and other wm's
+
+Options:
+  -c    specify path to the configuration file
+  -d    delimeter to separate modules
+  -s    output bar content to stdout instead of setting X root window name to it
+  -h    print synopsis and options, then exit
+  -v    print version information, then exit
+
+See pblocks(1) for documentation
+EOF
+}
+
+error() { printf "%s\\nUse \`pblocks -h\` for help\\n" "$1" >&2 && exit 1 ;}
+
 for file in "${XDG_CONFIG_HOME:-$HOME/.config}/pblocks/config" "${0%/*}/config"; do
     [ -f "$file" ] && config="$file" && break
 done
@@ -9,16 +26,16 @@ delim=" "
 displaycommand="xsetroot -name"
 
 while getopts "vhc:d:s" o; do case "$o" in
-    v) echo "pblocks-VERSION" && exit 0 ;;
-    h) echo "This program is suckless. Source code is the documentation." && exit 0 ;;
-    c) [ ! -f "$OPTARG" ] && echo "$OPTARG: no such file" && exit 1
+    v) printf "pblocks-VERSION\\n" && exit 0 ;;
+    h) usage && exit 0 ;;
+    c) [ ! -f "$OPTARG" ] && error "$OPTARG: no such file"
         config="$OPTARG" ;;
     d) delim="$OPTARG" ;;
     s) displaycommand="printf '%s\\n'" ;;
-    *) echo "Invalid option: -$OPTARG" && exit 1 ;;
+    *) error ;;
 esac done
 
-[ -z "$config" ] && echo "Config not found." && exit 1
+[ -z "$config" ] && error "Config not found."
 
 display() { eval "$displaycommand \"$bar\"" ;}
 
