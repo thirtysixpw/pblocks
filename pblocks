@@ -32,18 +32,18 @@ while :; do
     [ $sec -ne 0 ] && sleep 1 &
     wait && {
         id=0
-        while read -r ico interv sig cmd; do
+        while read -r icon interval signal command; do
             if [ $sec -eq 0 ]; then
-                eval "update$id() { block$id=\$(setsid -f $cmd) ;}"
-                [ "$interv" -eq 0 ]  && "update$id" && display
+                eval "update$id() { block$id=\$(setsid -f $command) ;}"
+                [ "$interval" -eq 0 ]  && "update$id" && display
 
-                bar="${bar:+$bar$delim}$ico\${block$id}"
+                bar="${bar:+$bar$delim}${icon}\${block$id}"
 
                 # shellcheck disable=SC2064
-                trap "update$id && display" "RTMIN+$sig"
+                trap "update$id && display" "RTMIN+$signal"
             fi
             # update block if seconds divide by interval
-            [ "$interv" -ne 0 ] && [ $((sec % interv)) -eq 0 ] && "update$id" && display
+            [ "$interval" -ne 0 ] && [ $((sec % interval)) -eq 0 ] && update$id && display
             id=$((id + 1))
         done < "$temp"
         sec=$((sec + 1))
