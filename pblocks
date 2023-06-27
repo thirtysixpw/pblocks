@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# pblocks - modular status bar for dwm (and other wm's)
+# pblocks - modular status bar for dwm and other wm's
 
 for file in "${XDG_CONFIG_HOME:-$HOME/.config}/pblocks/config" "${0%/*}/config"; do
     [ -f "$file" ] && config="$file" && break
@@ -9,7 +9,7 @@ delim=" "
 displaycommand="xsetroot -name"
 
 while getopts "vhc:d:s" o; do case "$o" in
-    v) echo "VERSION" && exit 0 ;;
+    v) echo "pblocks-VERSION" && exit 0 ;;
     h) echo "This program is suckless. Source code is the documentation." && exit 0 ;;
     c) [ ! -f "$OPTARG" ] && echo "$OPTARG: no such file" && exit 1
         config="$OPTARG" ;;
