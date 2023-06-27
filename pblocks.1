@@ -1,0 +1,60 @@
+.TH PBLOCKS 1 "May 2023" "pblocks 1.0"
+.SH NAME
+pblocks \- modular status bar for
+.B dwm
+and other wm's
+.SH SYNOPSIS
+.B pblocks
+[
+.I OPTIONS
+]...
+
+.SH DESCRIPTION
+.B pblocks
+helps to build very extensible status bars through use of scriptable modules and signals.
+.SH OPTIONS
+.TP
+.B -c
+specify path to the configuration file
+.TP
+.B -d
+delimeter to separate modules
+.TP
+.B -s
+output bar content to stdout instead of setting X root window name to it
+.TP
+.B -h
+print synopsis and options, then exit
+.TP .B -v
+print version information, then exit
+.SH CONFIGURATION
+By default, the configuration file is loaded from:
+.IP \(bu 2
+.I $XDG_CONFIG_HOME/pblocks/config
+.IP \(bu 2
+.I $HOME/.config/pblocks/config
+.IP \(bu 2
+.I config
+file in the same directory as pblocks
+.SH SIGNALS
+Modules can be given signals to update them instead of having them rerun on interval.
+
+For example, the volume module has the update signal 10. Thus,
+running
+.B pkill \-x \-RTMIN+10 pblocks
+will update it. You can also run
+.B kill \-44 $(pidof \-x pblocks)
+which will have the same effect,
+but is faster. Just add 34 to your typical signal number. After adding this command along side your volume shortcuts will update module only when relevant.
+
+Note that all modules must have different signal numbers.
+.SH BUGS
+Report bugs at <\fIhttps://github.com/thirtysixpw/pblocks\fP>
+.SH AUTHOR
+Written by Zubarev Grigoriy <thirtysix@thirtysix.pw>
+.SH LICENSE
+GNU General Public License v3.0
+.SH SEE ALSO
+.BR xsetroot (1),
+.BR kill (1),
+.BR dwm (1)
