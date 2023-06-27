@@ -1,6 +1,6 @@
 # pblocks
 
-Modular status bar for dwm (and other wm's) written in POSIX shell.
+Modular status bar for dwm and other wm's written in POSIX shell.
 
 ## Modifying blocks
 
@@ -9,20 +9,20 @@ added and removed by editing the config.h file.
 
 ## My config
 
-I have pblocks read my preexisting scripts
-[here in my dotfiles repo](https://github.com/thirtysixpw/dotfiles/tree/master/.local/bin/statusbar).
-So if you want my build out of the box, download those and put them in your
+I have pblocks run preexisting scripts
+[from my dotfiles repo](https://github.com/thirtysixpw/dotfiles/tree/master/.local/bin/statusbar).
+So if you want to use my config, download those and put them in your
 `$PATH`. I do this to avoid redundancy in my setup, because I use the same
 scripts in all of my statusbars.
 
 ## Signaling changes
 
 Most statusbars constantly rerun every script every several seconds to update.
-This is an option here, but a superior choice is giving your module a signal
+This is an option here, but a *superior* choice is giving your module a signal
 that you can signal to it to update on a relevant event, rather than having it
-rerun idly.
+rerun on interval.
 
-For example, the volume module has the update signal 10 by default. Thus,
+For example, the volume module has the update signal 10. Thus,
 running `pkill -x -RTMIN+10 pblocks` will update it.
 
 You can also run `kill -44 $(pidof -x pblocks)` which will have the same effect,
@@ -35,6 +35,14 @@ Note that all modules must have different signal numbers.
 
 ## Improvements
 
-The only notable feature that is lacking at the moment is _clickable modules_.
+The only notable feature that is lacking at the moment is *clickable modules*.
 It exports `$BLOCK_BUTTON` variable and runs block stript in response to click events
-to bar, which then can be handled in statusbar scipts. Any help will be apreciated.
+to bar, which then can be handled in statusbar scipts.
+
+This seems impossible to implement because in `dwmblocks` and other bars it's
+done throught use of `sigqueu` and it's handler. Any help will be apreciated.
+
+## License
+
+This program is released under the GPLv3 license, which you can
+find in the [LICENSE](LICENSE) file.
