@@ -19,23 +19,20 @@ EOF
 
 error() { printf "%s\\nUse \`pblocks -h\` for help\\n" "$1" >&2 && exit 1 ;}
 
-for file in "${XDG_CONFIG_HOME:-$HOME/.config}/pblocks/config" "${0%/*}/config"; do
-    [ -f "$file" ] && config="$file" && break
-done
+config="${XDG_CONFIG_HOME:-$HOME/.config}/pblocks/config"
 delim=" "
 displaycommand="xsetroot -name"
 
 while getopts "vhc:d:s" o; do case "$o" in
     v) printf "pblocks-VERSION\\n" && exit 0 ;;
     h) usage && exit 0 ;;
-    c) [ ! -f "$OPTARG" ] && error "$OPTARG: no such file"
-        config="$OPTARG" ;;
+    c) config="$OPTARG" ;;
     d) delim="$OPTARG" ;;
     s) displaycommand="printf '%s\\n'" ;;
     *) error ;;
 esac done
 
-[ -z "$config" ] && error "Config not found."
+[ ! -f "$config" ] && error "$config: no such file"
 
 display() { eval "$displaycommand \"$bar\"" ;}
 
