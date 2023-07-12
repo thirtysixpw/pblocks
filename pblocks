@@ -1,43 +1,45 @@
 #!/bin/sh
+# shellcheck disable=SC2064
 
 # pblocks - modular status bar for dwm and other wm's
 
 usage() {
-    cat <<EOF
-pblocks: modular status bar for dwm and other wm's
+    printf "pblocks: modular status bar for dwm and other wm's
 
 Options:
   -c    specify path to the configuration file
   -d    delimeter to separate modules
   -s    output bar content to stdout instead of setting X root window name to it
-  -h    print synopsis and options, then exit
-  -v    print version information, then exit
+  -h    print this help message
+  -v    print version information
 
-See pblocks(1) for documentation
-EOF
+See pblocks(1) for documentation"
 }
 
-error() { printf "%s\\nUse \`pblocks -h\` for help\\n" "$1" >&2 && exit 1 ;}
+error() {
+    printf "%s\\nUse \`pblocks -h\` for help\\n" "$1" >&2
+    exit 1
+}
 
 config="${XDG_CONFIG_HOME:-$HOME/.config}/pblocks/config"
 delim=" "
 displaycommand="xsetroot -name"
 
-while getopts "vhc:d:s" o; do case "$o" in
-    v) printf "pblocks-VERSION\\n" && exit 0 ;;
-    h) usage && exit 0 ;;
+while getopts ":vhc:d:s" OPT; do case "$OPT" in
+    v) printf "pblocks-VERSION\\n" ; exit 0 ;;
+    h) usage ; exit 0 ;;
     c) config="$OPTARG" ;;
     d) delim="$OPTARG" ;;
-    s) displaycommand="printf '%s\\n'" ;;
-    *) error ;;
+    s) displaycommand='printf "%s\\n"' ;;
+    \?) error "Invalid option: '$OPTARG'" ;;
 esac done
 
-[ ! -f "$config" ] && error "$config: no such file"
+[ ! -f "$config" ] && error "No such file: '$config'"
 
 display() { eval "$displaycommand \"$bar\"" ;}
 
-temp="$(mktemp /tmp/XXX.pblocks)"
-trap 'rm -f $temp ; return' HUP INT QUIT TERM PWR EXIT
+temp="$(mktemp /tmp/pblocks.XXX)"
+trap "rm -f \"$temp\" ; exit 0" HUP INT QUIT TERM PWR EXIT
 grep -v -e'^#' -e'^[\s\t]*$' "$config" > "$temp"
 
 bar=""
@@ -49,11 +51,10 @@ while :; do
         while read -r icon interval signal command; do
             if [ $sec -eq 0 ]; then
                 eval "update$id() { block$id=\$(setsid -f $command) ;}"
-                [ "$interval" -eq 0 ]  && "update$id" && display
+                [ "$interval" -eq 0 ] && update$id && display
 
                 bar="${bar:+$bar$delim}${icon}\${block$id}"
 
-                # shellcheck disable=SC2064
                 trap "update$id && display" "RTMIN+$signal"
             fi
             # update block if seconds divide by interval
