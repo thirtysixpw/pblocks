@@ -3,21 +3,8 @@
 
 # pblocks - modular status bar for dwm and other wm's
 
-usage() {
-    printf "pblocks: modular status bar for dwm and other wm's
-
-Options:
-  -c    specify path to the configuration file
-  -d    delimeter to separate modules
-  -s    output bar content to stdout instead of setting X root window name to it
-  -h    print this help message
-  -v    print version information
-
-See pblocks(1) for documentation"
-}
-
-error() {
-    printf "%s\\nUse \`pblocks -h\` for help\\n" "$1" >&2
+die() {
+    printf "error: %s\\n" "$1" >&2
     exit 1
 }
 
@@ -27,14 +14,14 @@ displaycommand="xsetroot -name"
 
 while getopts ":vhc:d:s" OPT; do case "$OPT" in
     v) printf "pblocks-VERSION\\n" ; exit 0 ;;
-    h) usage ; exit 0 ;;
+    h) { man pblocks ; exit 0 ;} || die "could not open man page" ;;
     c) config="$OPTARG" ;;
     d) delim="$OPTARG" ;;
     s) displaycommand='printf "%s\\n"' ;;
-    \?) error "Invalid option: '$OPTARG'" ;;
+    \?) die "invalid option: '$OPTARG'" ;;
 esac done
 
-[ ! -f "$config" ] && error "No such file: '$config'"
+[ ! -f "$config" ] && die "config not found: '$config'"
 
 display() { eval "$displaycommand \"$bar\"" ;}
 
