@@ -1,58 +1,69 @@
-.TH PBLOCKS 1 pblocks VERSION
+.TH PBLOCKS 1 pblocks-VERSION
 .SH NAME
-pblocks \- modular status bar for
-.B dwm
-and other wm's
+pblocks \- modular status bar for dwm and other wm's
 .SH SYNOPSIS
 .B pblocks
-[
-.I OPTIONS
-]...
-
+.RI [ OPTIONS ]...
 .SH DESCRIPTION
-.B pblocks
-helps to build very extensible status bars through use of scriptable modules and signals.
+Pblocks helps to build very extensible status bars through use of scriptable modules and update signals.
 .SH OPTIONS
 .TP
-.B -c
-specify path to the configuration file
+.B \-c
+path to the configuration file
 .TP
-.B -d
-delimeter to separate modules
+.B \-d
+delimiter to separate modules
 .TP
-.B -s
-output bar content to stdout instead of setting X root window name to it
+.B \-s
+output bar content to stdout
 .TP
-.B -h
-print synopsis and options, then exit
+.B \-h
+print usage
 .TP
-.B -v
-print version information, then exit
+.B \-v
+print current version
 .SH CONFIGURATION
-By default, the configuration file is loaded from:
-.IP \(bu 2
-.I $XDG_CONFIG_HOME/pblocks/config
-.IP \(bu 2
-.I $HOME/.config/pblocks/config
-.SH SIGNALS
-Modules can be given signals to update them instead of having them rerun on interval.
-
-For example, the volume module has the update signal 10. Thus,
-running
-.B pkill \-x \-RTMIN+10 pblocks
-will update it. You can also run
-.B kill \-44 $(pidof \-x pblocks)
-which will have the same effect,
-but is faster. Just add 34 to your typical signal number. After adding this command along side your volume shortcuts will update module only when relevant.
-
-Note that all modules must have different signal numbers.
-.SH BUGS
-Report bugs at <\fIhttps://github.com/thirtysixpw/pblocks\fP>
+.P
+Configuration file is loaded from
+.I ~/.config/pblocks/config
+unless
+.B \-c
+is used. Config file must have next format:
+.RS
+.B <icon> <update interval> <update signal> <command>
+.RE
+.P
+Modules can have
+.B unique
+signals to update them only then their value changes instead of having them rerun on interval, which is more efficient.
+.P
+To update module with update signal
+.I n
+(where n can be from 1 to 22) you need to run
+.RS
+.B pkill
+.BI \-RTMIN+ n
+.B \-x pblocks
+.RE
+.P
+Or next command which is faster (where
+.IR m = n +34)
+.RS
+.B kill
+.BI \- m
+.B $(pidof \-x pblocks)
+.RE
+.SH EXAMPLES
+.TP
+To setup the volume module with update signal 10 you need to put next command along side your volume bindings, so module will update only when volume changes, instead of constantly checking it's value.
+.B pkill \-RTMIN+10 \-x pblocks
 .SH AUTHOR
-Written by Zubarev Grigoriy <thirtysix@thirtysix.pw>
+Written by Zubarev Grigoriy
+.RI < thirtysix@thirtysix.pw >
+in 2023
 .SH LICENSE
-GNU General Public License v3.0
+General Public License v3 or later
 .SH SEE ALSO
+.BR pkill (1),
 .BR xsetroot (1),
-.BR kill (1),
 .BR dwm (1)
