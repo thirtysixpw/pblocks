@@ -21,7 +21,7 @@ error() {
     exit 1
 }
 
-config="${XDG_CONFIG_HOME:-$HOME/.config}/pblocks/config"
+config="${XDG_CONFIG_HOME:-$HOME/.config}/pblocks/pblocksrc"
 delim=" "
 displaycommand="xsetroot -name"
 
