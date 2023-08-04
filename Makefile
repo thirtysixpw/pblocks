@@ -1,13 +1,8 @@
 .POSIX:
 
-VERSION = 1.0
-
-ifndef PREFIX
-  PREFIX = /usr/local
-endif
-ifndef MANPREFIX
-  MANPREFIX = ${PREFIX}/share/man
-endif
+VERSION = 1.1
+PREFIX ?= /usr/local
+MANPREFIX ?= ${PREFIX}/share/man
 
 install:
 	mkdir -p ${DESTDIR}${PREFIX}/bin
