@@ -2,6 +2,7 @@
 # shellcheck disable=SC2064,SC2016
 
 # pblocks - modular status bar for dwm and other wm's
+# written by Zubarev Grigoriy <thirtysix@thirtysix.pw> in 2023
 
 die() {
     printf "[1;31merror:[0m %s\\n" "$1" >&2
@@ -10,11 +11,11 @@ die() {
 
 config="${XDG_CONFIG_HOME:-$HOME/.config}/pblocks/pblocksrc"
 delim=" "
-cmd="xsetroot -name \"%bar%\""
+displaycmd="xsetroot -name \"%bar%\""
 
 while getopts ":vhc:d:D:s" OPT; do case "$OPT" in
-    v) printf "pblocks-VERSION\\n" ; exit 0 ;;
-    h) { man pblocks ; exit 0 ;} || die "could not open man page" ;;
+    v) printf "pblocks-VERSION\\n"; exit 0 ;;
+    h) { man pblocks; exit 0 ;} || die "could not open man page" ;;
     c) config="$OPTARG" ;;
     d) delim="$OPTARG" ;;
     D) displaycmd="$OPTARG" ;;
@@ -28,8 +29,8 @@ displaycmd="$(echo "$displaycmd" | sed 's/%bar%/${bar}/g')"
 display() { eval "eval \"$displaycmd\"" ;}
 
 temp="$(mktemp "${TMPDIR:-/tmp}/pblocks.XXX")"
-trap 'rm -f "$temp" ; exit 0' HUP INT QUIT TERM PWR EXIT
-sed '/^\s*#/d;/^\s*$/d' < "$config" > "$temp"
+trap 'rm -f "$temp"; exit 0' HUP INT QUIT TERM PWR EXIT
+sed -e '/^\s*#/d' -e '/^\s*$/d' < "$config" > "$temp"
 
 bar=""
 sec=0
@@ -43,7 +44,7 @@ while :; do
                 [ "$interval" -eq 0 ] && update$id && display
 
                 bar="${bar:+$bar$delim}${icon}\${block$id}"
-				[ "$signal" -ge 1 ] && [ "$signal" -le 22 ] || die "signal numbers can be from 1 to 22: $signal"
+				[ "$signal" -lt 1 ] || [ "$signal" -gt 22 ] && die "signal numbers can be from 1 to 22: $signal"
                 trap "update$id && display" "RTMIN+$signal"
             fi
             # update block if seconds divide by interval
