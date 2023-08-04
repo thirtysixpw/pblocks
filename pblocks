@@ -1,33 +1,35 @@
 #!/bin/sh
-# shellcheck disable=SC2064
+# shellcheck disable=SC2064,SC2016
 
 # pblocks - modular status bar for dwm and other wm's
 
 die() {
-    printf "error: %s\\n" "$1" >&2
+    printf "[1;31merror:[0m %s\\n" "$1" >&2
     exit 1
 }
 
 config="${XDG_CONFIG_HOME:-$HOME/.config}/pblocks/pblocksrc"
 delim=" "
-displaycommand="xsetroot -name"
+cmd="xsetroot -name \"%bar%\""
 
-while getopts ":vhc:d:s" OPT; do case "$OPT" in
+while getopts ":vhc:d:D:s" OPT; do case "$OPT" in
     v) printf "pblocks-VERSION\\n" ; exit 0 ;;
     h) { man pblocks ; exit 0 ;} || die "could not open man page" ;;
     c) config="$OPTARG" ;;
     d) delim="$OPTARG" ;;
-    s) displaycommand='printf "%s\\n"' ;;
+    D) displaycmd="$OPTARG" ;;
+    s) displaycmd="echo \"%bar%\"" ;;
     \?) die "invalid option: '$OPTARG'" ;;
 esac done
 
 [ ! -f "$config" ] && die "config not found: '$config'"
 
-display() { eval "$displaycommand \"$bar\"" ;}
+displaycmd="$(echo "$displaycmd" | sed 's/%bar%/${bar}/g')"
+display() { eval "eval \"$displaycmd\"" ;}
 
-temp="$(mktemp /tmp/pblocks.XXX)"
-trap "rm -f \"$temp\" ; exit 0" HUP INT QUIT TERM PWR EXIT
-grep -v -e'^#' -e'^[\s\t]*$' "$config" > "$temp"
+temp="$(mktemp "${TMPDIR:-/tmp}/pblocks.XXX")"
+trap 'rm -f "$temp" ; exit 0' HUP INT QUIT TERM PWR EXIT
+sed '/^\s*#/d;/^\s*$/d' < "$config" > "$temp"
 
 bar=""
 sec=0
@@ -41,7 +43,7 @@ while :; do
                 [ "$interval" -eq 0 ] && update$id && display
 
                 bar="${bar:+$bar$delim}${icon}\${block$id}"
-
+				[ "$signal" -ge 1 ] && [ "$signal" -le 22 ] || die "signal numbers can be from 1 to 22: $signal"
                 trap "update$id && display" "RTMIN+$signal"
             fi
             # update block if seconds divide by interval
