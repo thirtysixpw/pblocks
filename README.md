@@ -2,16 +2,19 @@
 
 Modular status bar for dwm and other wm's written in POSIX shell.
 
-## Modifying blocks
+## Installation
 
-The statusbar is made from text output from commandline programs. Blocks are
-added and removed by editing the config.h file.
+A makefile is provided to make install and removal easy.
+Run `make install` *(as root if needed)*, `make uninstall` to remove.
 
-## My config
+## Configuration
+
+The status bar is made from text output from command line programs.
+For detailed usage see manpage with `man pblocks`.
 
 I have pblocks run preexisting scripts
 [from my dotfiles repo](https://github.com/thirtysixpw/dotfiles/tree/master/.local/bin/statusbar).
-So if you want to use my config, download those and put them in your
+So if you want to use [my config](pblocksrc), download those and put them in your
 `$PATH`. I do this to avoid redundancy in my setup, because I use the same
 scripts in all of my statusbars.
 
@@ -22,27 +25,29 @@ This is an option here, but a *superior* choice is giving your module a signal
 that you can signal to it to update on a relevant event, rather than having it
 rerun on interval.
 
-For example, the volume module has the update signal 10. Thus,
-running `pkill -x -RTMIN+10 pblocks` will update it.
+Modules can have **unique** signals to update them only then their value changes
+instead of having them rerun on interval, which is more efficient.
 
-You can also run `kill -44 $(pidof -x pblocks)` which will have the same effect,
-but is faster. Just add 34 to your typical signal number.
+To  update  module with update signal *n* (where n can be from 1 to 22)
+you need to run `pkill -RTMIN+n -x pblocks`.
+Or `kill -m $(pidof -x pblocks)` (where *m*=*n*+34), which is faster.
 
-My volume module *never* updates on its own, instead I have this command run
-along side my volume shortcuts in dwm to only update it when relevant.
+## Examples
 
-Note that all modules must have different signal numbers.
+To setup the volume module with update signal 10 you need to put
+`pkill -RTMIN+10 -x pblocks` command along side your volume bindings,
+so module will update only when volume changes, instead of constantly checking it's value.
+
+Run `pblocks -D "xprop -root -set WM_NAME \\\"%bar%\\\""` to update dwm bar with
+*xprop* instead of *xsetroot*. Note that special characters need to be escaped **twice**.
 
 ## Improvements
 
 The only notable feature that is lacking at the moment is *clickable modules*.
 It exports `$BLOCK_BUTTON` variable and runs block stript in response to click events
-to bar, which then can be handled in statusbar scipts.
-
-This seems impossible to implement because in `dwmblocks` and other bars it's
-done throught use of `sigqueu` and it's handler. Any help will be apreciated.
+to bar, which then can be handled in status bar scipts. Any help will be appreciated.
 
 ## License
 
-This program is released under the GPLv3 license, which you can
+This program is released under the GPLv3+ license, which you can
 find in the [LICENSE](LICENSE) file.
