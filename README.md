@@ -38,8 +38,9 @@ To setup the volume module with update signal 10 you need to put
 `pkill -RTMIN+10 -x pblocks` command along side your volume bindings,
 so module will update only when volume changes, instead of constantly checking it's value.
 
-Run `pblocks -D "xprop -root -set WM_NAME \\\"%bar%\\\""` to update dwm bar with
-*xprop* instead of *xsetroot*. Note that special characters need to be escaped **twice**.
+Run `pblocks -s | while read -r bar; do xprop -root -set WM_NAME "$bar"; done`
+to update dwm bar with *xprop* instead of *xsetroot*, although pblocks by
+default uses xprop instead of xsetroot if it is not present.
 
 ## Improvements
 

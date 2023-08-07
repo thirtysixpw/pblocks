@@ -14,11 +14,6 @@ path to the configuration file
 .B \-d
 delimiter to separate modules
 .TP
-.B \-D
-command to display bar
-.RI ( %bar%
-will be replaced with bar content, see examples)
-.TP
 .B \-s
 output bar content to stdout
 .TP
@@ -67,12 +62,10 @@ To setup the volume module with update signal 10 you need to put next command al
 Update dwm bar with
 .I xprop
 instead of
-.IR xsetroot .
-Note that special characters need to be escaped
-.IR twice .
-.\" pblocks -D "xprop -root -set WM_NAME \\\"%bar%\\\""
+.IR xsetroot ,
+although pblocks by default uses xprop instead of xsetroot if it is not present.
 .RS
-.B pblocks -D \&"xprop -root -set WM_NAME \\\\\\\\\\\\\&"%bar%\\\\\\\\\\\\\&"\&"
+.B pblocks -s | while read -r bar; do xprop -root -set WM_NAME \&"$bar\&"; done
 .RE
 .SH AUTHOR
 Written by Zubarev Grigoriy
@@ -83,4 +76,5 @@ General Public License v3 or later
 .SH SEE ALSO
 .BR pkill (1),
 .BR xsetroot (1),
+.BR xprop (1),
 .BR dwm (1)
