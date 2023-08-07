@@ -17,7 +17,7 @@ delimiter to separate modules
 .B \-D
 command to display bar
 .RI ( %bar%
-will be replaced with bar content)
+will be replaced with bar content, see examples)
 .TP
 .B \-s
 output bar content to stdout
@@ -29,17 +29,18 @@ opens this man page
 print current version
 .SH CONFIGURATION
 .P
+The status bar is made from text output from command line programs.
 Configuration file is loaded from
 .I ~/.config/pblocks/pblocksrc
-unless
-.B \-c
-is used. Config file must have next format:
+unless specified with
+.BR \-c .
+Config file must have next sections, separated with tabulations.
 .RS
 .B <icon> <update interval> <update signal> <command>
 .RE
 .P
 Modules can have
-.B unique
+.I unique
 signals to update them only then their value changes instead of having them rerun on interval, which is more efficient.
 .P
 To update module with update signal
@@ -62,9 +63,17 @@ Or next command which is faster (where
 .TP
 To setup the volume module with update signal 10 you need to put next command along side your volume bindings, so module will update only when volume changes, instead of constantly checking it's value.
 .B pkill \-RTMIN+10 \-x pblocks
-.TP
-Update dwm bar with xprop instead of xsetroot.
-.B pblocks -D 'xprop -root -set WM_NAME """%bar%"""
+.P
+Update dwm bar with
+.I xprop
+instead of
+.IR xsetroot .
+Note that special characters need to be escaped
+.IR twice .
+.\" pblocks -D "xprop -root -set WM_NAME \\\"%bar%\\\""
+.RS
+.B pblocks -D \&"xprop -root -set WM_NAME \\\\\\\\\\\\\&"%bar%\\\\\\\\\\\\\&"\&"
+.RE
 .SH AUTHOR
 Written by Zubarev Grigoriy
 .RI < thirtysix@thirtysix.pw >
