@@ -3,24 +3,26 @@
 
 # pblocks - modular status bar for dwm and other wm's
 # written by Zubarev Grigoriy <thirtysix@thirtysix.pw> in 2023
+# licensed under the terms of GPLv3+
+
 
 die() {
-    printf "[1;31merror:[0m %s\\n" "$1" >&2
-    exit 1
+	printf "[1;31merror:[0m %s\\n" "$1" >&2
+	exit 1
 }
 
 config="${XDG_CONFIG_HOME:-$HOME/.config}/pblocks/pblocksrc"
 delim=" "
-displaycmd="xsetroot -name \"%bar%\""
+displaycmd="xsetroot -name \\\"%bar%\\\""
 
 while getopts ":vhc:d:D:s" OPT; do case "$OPT" in
-    v) printf "pblocks-VERSION\\n"; exit 0 ;;
-    h) { man pblocks; exit 0 ;} || die "could not open man page" ;;
-    c) config="$OPTARG" ;;
-    d) delim="$OPTARG" ;;
-    D) displaycmd="$OPTARG" ;;
-    s) displaycmd="echo \"%bar%\"" ;;
-    \?) die "invalid option: '$OPTARG'" ;;
+	v) printf "pblocks-VERSION\\n"; exit 0 ;;
+	h) { man pblocks && exit 0 ;} || die "could not open man page" ;;
+	c) config="$OPTARG" ;;
+	d) delim="$OPTARG" ;;
+	D) displaycmd="$OPTARG" ;;
+	s) displaycmd="printf \\\"%s\\n\\\" \\\"%bar%\\\"" ;;
+	\?) die "invalid option: '$OPTARG'" ;;
 esac done
 
 [ ! -f "$config" ] && die "config not found: '$config'"
@@ -35,22 +37,23 @@ sed -e '/^\s*#/d' -e '/^\s*$/d' < "$config" > "$temp"
 bar=""
 sec=0
 while :; do
-    [ $sec -ne 0 ] && sleep 1 &
-    wait && {
-        id=0
-        while read -r icon interval signal command; do
-            if [ $sec -eq 0 ]; then
-                eval "update$id() { block$id=\$(setsid -f $command) ;}"
-                [ "$interval" -eq 0 ] && update$id && display
+	[ $sec -ne 0 ] && sleep 1 &
+	wait && {
+		id=0
+		while IFS="$(printf '\t')" read -r icon interval signal command; do
+			if [ $sec -eq 0 ]; then
+				eval "update$id() { block$id=\$(setsid -f $command) ;}"
+				[ "$interval" -eq 0 ] && update$id && display
 
-                bar="${bar:+$bar$delim}${icon}\${block$id}"
-				[ "$signal" -lt 1 ] || [ "$signal" -gt 22 ] && die "signal numbers can be from 1 to 22: $signal"
-                trap "update$id && display" "RTMIN+$signal"
-            fi
-            # update block if seconds divide by interval
-            [ "$interval" -ne 0 ] && [ $((sec % interval)) -eq 0 ] && update$id && display
-            id=$((id + 1))
-        done < "$temp"
-        sec=$((sec + 1))
-    }
-done
+				bar="${bar:+$bar$delim}${icon}\${block$id}"
+
+				[ "$signal" -lt 1 ] || [ "$signal" -gt 22 ] && die "signal numbers can be from 1 to 22: '$signal'"
+				trap "update$id && display" "RTMIN+$signal"
+			fi
+			# update block if seconds divide by interval
+			[ "$interval" -ne 0 ] && [ $((sec % interval)) -eq 0 ] && update$id && display
+			id=$((id + 1))
+		done < "$temp"
+		sec=$((sec + 1))
+	}
+	done

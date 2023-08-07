@@ -1,7 +1,7 @@
 # Icon  Interval  Signal  Command
-""      60      7       up-time
-""      0       8       packages
-""      10      14      memory
-""      0       10      volume
-""      0       4       vpn
-""      60      1       datetime
+""		60		7		up-time
+""		0		8		packages
+""		10		14		memory
+""		0		10		volume
+""		0		4		vpn
+""		60		1		datetime
