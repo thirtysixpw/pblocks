@@ -40,7 +40,7 @@ fi
 display() { eval "$displaycmd \"$bar\"" ;}
 
 temp="$(mktemp "${TMPDIR:-/tmp}/pblocks.XXX")"
-trap 'rm -f "$temp"; exit 0' HUP QUIT TERM PWR EXIT
+trap 'rm -f "$temp"; exit 0' INT TERM EXIT
 sed -e '/^\s*#/d' -e '/^\s*$/d' < "$config" > "$temp"
 
 bar=""
