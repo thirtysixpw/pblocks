@@ -14,7 +14,7 @@ For detailed usage see manpage with `man pblocks`.
 
 I have pblocks run preexisting scripts
 [from my dotfiles repo](https://github.com/thirtysixpw/dotfiles/tree/master/.local/bin/statusbar).
-So if you want to use [my config](pblocksrc), download those and put them in your
+So if you want to use [my config](https://github.com/thirtysixpw/dotfiles/blob/master/.config/pblocks/pblocksrc), download those and put them in your
 `$PATH`. I do this to avoid redundancy in my setup, because I use the same
 scripts in all of my statusbars.
 
