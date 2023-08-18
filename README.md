@@ -45,10 +45,10 @@ default uses xprop instead of xsetroot if it is not present.
 ## Improvements
 
 The only notable feature that is lacking at the moment is *clickable modules*.
-It exports `$BLOCK_BUTTON` variable and runs block stript in response to click events
-to bar, which then can be handled in status bar scipts. Any help will be appreciated.
+It exports `$BLOCK_BUTTON` variable and runs block script in response to click events
+to bar, which then can be handled in status bar scripts. Any help will be appreciated.
 
 ## License
 
-This program is released under the GPLv3+ license, which you can
-find in the [LICENSE](LICENSE) file.
+pblocks is free/libre software. This program is released under the GPLv3
+license, which you can find in the file [LICENSE](LICENSE).

@@ -1,42 +1,40 @@
 #!/bin/sh
-# shellcheck disable=SC2064,SC2016
+# shellcheck disable=2064,2016
 
 # pblocks - modular status bar for dwm and other wm's
 # written by Zubarev Grigoriy <thirtysix@thirtysix.pw> in 2023
-# licensed under the terms of GPLv3+
-
-die() {
+# License: GNU GPLv3
+error() {
 	printf "[1;31merror:[0m %s\\n" "$1" >&2
 	exit 1
 }
 
-while getopts ":vhc:d:s" OPT; do case "$OPT" in
+while getopts ":vhc:d:s" opt; do case "$opt" in
 	v) printf "pblocks-VERSION\\n"; exit 0 ;;
-	h) man pblocks 2>/dev/null || die "could not open man page: 'pblocks'"; exit 0 ;;
-	c) [ -n "$config" ] && die "'-$OPT' does not support being passed multiple times"
+	h) man pblocks 2>/dev/null || error "could not open pblocks man page"; exit 0 ;;
+	c) [ -n "$config" ] && error "'-$OPT' does not support being passed multiple times"
 		config="$OPTARG" ;;
-	d) [ -n "$delim" ] && die "'-$OPT' does not support being passed multiple times"
+	d) [ -n "$delim" ] && error "'-$OPT' does not support being passed multiple times"
 		delim="$OPTARG" ;;
-	s) [ -n "$displaycmd" ] && die "'-$OPT' does not support being passed multiple times"
+	s) [ -n "$displaycmd" ] && error "'-$OPT' does not support being passed multiple times"
 		displaycmd="printf \"%s\\n\"" ;;
-	:) die "'-$OPTARG' requires argument" ;;
-	\?) die "invalid option: '$OPTARG'" ;;
+	:) error "'-$OPTARG' requires argument" ;;
+	\?) error "invalid option: '$OPTARG'" ;;
 esac done
 
 config="${config:-${XDG_CONFIG_HOME:-$HOME/.config}/pblocks/pblocksrc}"
 delim="${delim:- | }"
 if [ -z "$displaycmd" ]; then
-	if command -v xsetroot >/dev/null; then
+	if command -v xsetroot >/dev/null 2>&1; then
 		displaycmd="xsetroot -name"
-	elif command -v xprop >/dev/null; then
+	elif command -v xprop >/dev/null 2>&1; then
 		displaycmd="xprop -root -set WM_NAME"
 	else
-		die "pblocks requires \`xsetroot\` or \`xprop\` to set dwm bar"
+		error "pblocks requires either \`xsetroot\` or \`xprop\` to update dwm bar"
 	fi
 fi
 
-[ ! -f "$config" ] && die "no such config file: '$config'"
-
+[ ! -f "$config" ] && error "no such config file: '$config'"
 display() { eval "$displaycmd \"$bar\"" ;}
 
 temp="$(mktemp "${TMPDIR:-/tmp}/pblocks.XXX")"
@@ -51,15 +49,15 @@ while :; do
 		id=0
 		while IFS="$(printf '\t')" read -r icon interval signal command; do
 			if [ $sec -eq 0 ]; then
+				[ -z "$command" ] && error "could not parse '$((id + 1))' module"
 				eval "update$id() { block$id=\$(setsid -f $command) ;}"
 				[ "$interval" -eq 0 ] && update$id && display
 
 				bar="${bar:+$bar$delim}${icon}\${block$id}"
 
-				[ "$signal" -lt 1 ] || [ "$signal" -gt 22 ] && die "signal numbers can be from 1 to 22: '$signal'"
+				{ [ "$signal" -lt 1 ] || [ "$signal" -gt 22 ] ;} && error "signal numbers can be from 1 to 22: '$signal'"
 				trap "update$id && display" "RTMIN+$signal"
 			fi
-			# update block if seconds divide by interval
 			[ "$interval" -ne 0 ] && [ $((sec % interval)) -eq 0 ] && update$id && display
 			id=$((id + 1))
 		done < "$temp"
