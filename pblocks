@@ -23,7 +23,7 @@ while getopts ":vhc:d:s" opt; do case "$opt" in
 esac done
 
 config="${config:-${XDG_CONFIG_HOME:-$HOME/.config}/pblocks/pblocksrc}"
-delim="${delim:- | }"
+delim="${delim:- }"
 if [ -z "$displaycmd" ]; then
 	if command -v xsetroot >/dev/null 2>&1; then
 		displaycmd="xsetroot -name"

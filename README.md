@@ -7,6 +7,8 @@ Modular status bar for dwm and other wm's written in POSIX shell.
 A makefile is provided to make install and removal easy.
 Run `make install` *(as root if needed)*, `make uninstall` to remove.
 
+A user of Arch-based distro can also install [pblocks-git](https://aur.archlinux.org/packages/pblocks-git) package from the AUR.
+
 ## Configuration
 
 The status bar is made from text output from command line programs.
