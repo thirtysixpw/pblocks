@@ -39,7 +39,7 @@ display() { eval "$displaycmd \"$bar\"" ;}
 
 temp="$(mktemp "${TMPDIR:-/tmp}/pblocks.XXX")"
 trap 'rm -f "$temp"; exit 0' INT TERM EXIT
-sed -e '/^\s*#/d' -e '/^\s*$/d' < "$config" > "$temp"
+grep -v -e '^\s*#' -e '^\s*$' "$config" > "$temp"
 
 bar=""
 sec=0
@@ -47,13 +47,13 @@ while :; do
 	[ $sec -ne 0 ] && sleep 1 &
 	wait && {
 		id=0
-		while IFS="$(printf '\t')" read -r icon interval signal command; do
+		while IFS="$(printf '\t')" read -r interval signal command; do
 			if [ $sec -eq 0 ]; then
 				[ -z "$command" ] && error "could not parse '$((id + 1))' module"
-				eval "update$id() { block$id=\$(setsid -f sh -c \"$command\") ;}"
+				eval "update$id() { block$id=\$(setsid -f $command) ;}"
 				[ "$interval" -eq 0 ] && update$id && display
 
-				bar="${bar:+$bar$delim}${icon}\${block$id}"
+				bar="${bar:+$bar$delim}\${block$id}"
 
 				{ [ "$signal" -lt 1 ] || [ "$signal" -gt 22 ] ;} && error "signal numbers can be from 1 to 22: '$signal'"
 				trap "update$id && display" "RTMIN+$signal"

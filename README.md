@@ -31,18 +31,26 @@ Modules can have **unique** signals to update them only then their value changes
 instead of having them rerun on interval, which is more efficient.
 
 To  update  module with update signal *n* (where n can be from 1 to 22)
-you need to run `pkill -RTMIN+n -x pblocks`.
+you need to run `pkill -RTMIN+n pblocks`.
 Or `kill -m $(pidof -x pblocks)` (where *m*=*n*+34), which is faster.
 
 ## Examples
 
 To setup the volume module with update signal 10 you need to put
-`pkill -RTMIN+10 -x pblocks` command along side your volume bindings,
+`pkill -RTMIN+10 pblocks` command along side your volume bindings,
 so module will update only when volume changes, instead of constantly checking it's value.
 
 Run `pblocks -s | while read -r bar; do xprop -root -set WM_NAME "$bar"; done`
 to update dwm bar with *xprop* instead of *xsetroot*, although pblocks by
 default uses xprop instead of xsetroot if it is not present.
+
+## Icons
+
+There is no *icon* column in config file, because many people either don't use them at all
+or use dynamic icons, that change corresponding to certain events.
+
+To use icons add them directly to scripts or use `printf "<icon>%s" "$(<command>)"` as
+command, which is universal.
 
 ## Improvements
 

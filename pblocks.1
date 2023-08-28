@@ -31,8 +31,14 @@ unless specified with
 .BR \-c .
 Config file must have next sections, separated with tabulations.
 .RS
-.B <icon> <update interval> <update signal> <command>
+.B <update interval> <update signal> <command>
 .RE
+.P
+To use icons add them directly to scripts or use
+.B printf
+.BI \&" <icon> %s\&"
+.BI \&"$( <command> )"
+as command, which is universal.
 .P
 Modules can have
 .I unique
@@ -44,7 +50,7 @@ To update module with update signal
 .RS
 .B pkill
 .BI \-RTMIN+ n
-.B \-x pblocks
+.B pblocks
 .RE
 .P
 Or next command which is faster (where
@@ -57,7 +63,7 @@ Or next command which is faster (where
 .SH EXAMPLES
 .TP
 To setup the volume module with update signal 10 you need to put next command along side your volume bindings, so module will update only when volume changes, instead of constantly checking it's value.
-.B pkill \-RTMIN+10 \-x pblocks
+.B pkill \-RTMIN+10 pblocks
 .P
 Update dwm bar with
 .I xprop
