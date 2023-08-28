@@ -50,7 +50,7 @@ while :; do
 		while IFS="$(printf '\t')" read -r icon interval signal command; do
 			if [ $sec -eq 0 ]; then
 				[ -z "$command" ] && error "could not parse '$((id + 1))' module"
-				eval "update$id() { block$id=\$(setsid -f $command) ;}"
+				eval "update$id() { block$id=\$(setsid -f sh -c \"$command\") ;}"
 				[ "$interval" -eq 0 ] && update$id && display
 
 				bar="${bar:+$bar$delim}${icon}\${block$id}"
