@@ -1,3 +1,9 @@
+# Upstream moved to [Codeberg](https://codeberg.org/thirtysixpw/pblocks)
+
+## [codeberg.org/thirtysixpw/pblocks](https://codeberg.org/thirtysixpw/pblocks)
+
+### This repository will not get updates
+
 # pblocks
 
 Modular status bar for dwm and other wm's written in POSIX shell.
